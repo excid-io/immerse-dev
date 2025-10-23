@@ -12,3 +12,5 @@ Development repository of the IMMERSE project.
 <video width="100%" controls>
   <source src="videos/2d-experience-demo.mp4" type="video/mp4">
 </video>
+
+<video src="2d-experience-demo.mp4" controls width="640"></video>
