@@ -4,13 +4,11 @@ Development repository of the IMMERSE project.
 
 
 ## 3D Experience Demo
-<video width="100%" controls>
-  <source src="videos/3d-experience-demo.mp4" type="video/mp4">
-</video>
+
 
 ## 2D Experience Demo
-<video width="100%" controls>
-  <source src="videos/2d-experience-demo.mp4" type="video/mp4">
-</video>
 
-<video src="2d-experience-demo.mp4" controls width="640"></video>
+
+https://github.com/user-attachments/assets/0a81d6f4-ede1-4df5-9d07-9aa98676ea66
+
+
