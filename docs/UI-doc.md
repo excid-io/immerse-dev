@@ -194,16 +194,46 @@ Our primary AR testing has been conducted using the Samsung Galaxy S24 FE smartp
 
 For iOS compatibility testing, we've utilized the iPhone 15 running the latest versions of iOS. As noted in our testing, Chrome on iOS does not support WebXR due to Apple's requirement that all browsers on iOS use the WebKit rendering engine. Since WebKit does not currently implement the WebXR API, this limitation affects all browsers on iOS regardless of their capabilities on other platforms. However, we've successfully launched AR functionality on iOS using Mozilla's WebXR Viewer application, available through the App Store. Interestingly, we observed that the wallet interface functions within the Safari browser, though the consistency of this experience varies (see below). The most reliable AR experience on iOS currently comes through the dedicated WebXR Viewer app rather than through standard mobile browsers. Note that there have been no tests that include the Vision Pro headset.
 
-*iOS tests.*
-*Issuer:*
-![i2d1](https://github.com/user-attachments/assets/1c3da622-65f3-4886-95b1-f593eeff43c8)
-![i2d2](https://github.com/user-attachments/assets/5b26e245-6569-482e-9509-cd249a12bf81)
-![i2d3](https://github.com/user-attachments/assets/5a83df50-9fe9-43a2-8d14-bacf9866559d)
-![i2d4](https://github.com/user-attachments/assets/d7933c43-61bc-4746-afe1-081ee349729c)
-![i3d1](https://github.com/user-attachments/assets/b6b3b1d6-64d4-4359-964b-0eb136382694)
-![i3d2](https://github.com/user-attachments/assets/836d9a3a-35ef-4c7e-be7a-8a95a2742a35)
-![i3d3](https://github.com/user-attachments/assets/ae9efcdd-6628-4389-a71c-e2f5a143557d)
-![iar1](https://github.com/user-attachments/assets/d6f2c323-cabc-43a1-a953-f88813a7cdd8)
+***iOS tests.***
+
+*IMMERSE Issuer: 2D, 3D, AR*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1c3da622-65f3-4886-95b1-f593eeff43c8" alt="i2d1" width="100">
+  <img src="https://github.com/user-attachments/assets/5b26e245-6569-482e-9509-cd249a12bf81" alt="i2d2" width="100">
+  <img src="https://github.com/user-attachments/assets/5a83df50-9fe9-43a2-8d14-bacf9866559d" alt="i2d3" width="100">
+  <img src="https://github.com/user-attachments/assets/d7933c43-61bc-4746-afe1-081ee349729c" alt="i2d4" width="100">
+  <img src="https://github.com/user-attachments/assets/b6b3b1d6-64d4-4359-964b-0eb136382694" alt="i3d1" width="100">
+  <img src="https://github.com/user-attachments/assets/836d9a3a-35ef-4c7e-be7a-8a95a2742a35" alt="i3d2" width="100">
+  <img src="https://github.com/user-attachments/assets/ae9efcdd-6628-4389-a71c-e2f5a143557d" alt="i3d3" width="100">
+  <img src="https://github.com/user-attachments/assets/d6f2c323-cabc-43a1-a953-f88813a7cdd8" alt="iar1" width="100">
+</p>
+
+*IMMERSE Wallet: 2D, 3D, AR, VC display and Verification modal*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/3048c650-6d64-4afd-9869-9cfa50fad73e" alt="w2d1" width="100">
+  <img src="https://github.com/user-attachments/assets/2d6715c7-f497-4ae0-badc-fccc7c9d602d" alt="w2d2" width="100">
+  <img src="https://github.com/user-attachments/assets/fc404440-53b0-42f6-a626-73cf0bfea4c4" alt="w3d1" width="100">
+  <img src="https://github.com/user-attachments/assets/202f8498-8d80-40b7-ad6a-2b549d8e2916" alt="w3d2" width="100">
+  <img src="https://github.com/user-attachments/assets/c291b471-8d16-438c-a17c-be8e847f1dfa" alt="war1" width="100">
+  <img src="https://github.com/user-attachments/assets/d055a419-8186-443a-bfa6-eefae8920dbd" alt="w" width="100">
+  <img src="https://github.com/user-attachments/assets/f6d750bb-7fa9-44ec-b2fb-d3e96db97f15" alt="w2" width="100">
+  <img src="https://github.com/user-attachments/assets/1d6ca060-04c5-4a18-b976-b9eaf6c7f6fb" alt="w3" width="100">
+</p>
+
+*IMMERSE Verifier: 2D, 3D, AR*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/52e9caa2-fbde-4aff-a2a4-6a2cb17ae8c3" alt="v2d1" width="79">
+  <img src="https://github.com/user-attachments/assets/b00ca2b9-2e25-4a84-9b0e-5c2a3ac86fdf" alt="v2d2" width="79">
+  <img src="https://github.com/user-attachments/assets/970e9c3a-0d78-466c-b9bf-138cfb050acd" alt="v2d3" width="79">
+  <img src="https://github.com/user-attachments/assets/dca3eb34-bf1e-4cc7-838b-a88ae12b2db4" alt="v2d4" width="79">
+  <img src="https://github.com/user-attachments/assets/ed51c791-d761-44bb-ba38-89b04e96796d" alt="v3d1" width="79">
+  <img src="https://github.com/user-attachments/assets/fec40bfd-f801-43ac-a4be-26d01eeac4bd" alt="v3d2" width="79">
+  <img src="https://github.com/user-attachments/assets/dada9eaf-910a-4c89-b3fa-6905320c516c" alt="v3d3" width="79">
+  <img src="https://github.com/user-attachments/assets/984e37cd-2fad-4a1c-980f-686c31ca8a2d" alt="var1" width="79">
+  <img src="https://github.com/user-attachments/assets/ac87314e-a570-49fb-ba60-ef2a2519b707" alt="var2" width="79">
+  <img src="https://github.com/user-attachments/assets/cbfe4d09-b555-4080-b937-dfbd60c1af02" alt="vclass" width="79">
+</p>
+
 
 
 Looking toward the future, Apple's announcement of WebXR support for the Vision Pro headset suggests that broader WebXR adoption may be coming to Apple's ecosystem. This development could significantly improve AR accessibility for iOS users in the coming years, potentially eliminating the need for dedicated WebXR applications.
