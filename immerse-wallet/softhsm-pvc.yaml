@@ -1,0 +1,11 @@
+# softhsm-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: softhsm-pvc
+  namespace: cvm-security
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi

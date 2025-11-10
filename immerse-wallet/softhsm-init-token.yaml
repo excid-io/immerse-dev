@@ -1,0 +1,48 @@
+# softhsm-init-token.yaml 
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: softhsm-init
+  namespace: cvm-security
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: init
+        image: debian:12-slim
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: PIN
+          valueFrom: { secretKeyRef: { name: softhsm-pins, key: PIN } }
+        - name: SO_PIN
+          valueFrom: { secretKeyRef: { name: softhsm-pins, key: SO_PIN } }
+        - name: SOFTHSM2_CONF
+          value: /etc/softhsm2/softhsm2.conf
+        - name: SOFTHSM_MODULE
+          value: /usr/lib/softhsm/libsofthsm2.so
+        command: ["/bin/sh","-c"]
+        args:
+          - |
+            set -ex
+            echo "== apt-get update =="
+            apt-get update -o Acquire::Retries=5
+            echo "== install packages =="
+            apt-get install -y --no-install-recommends softhsm2 opensc ca-certificates
+            echo "== write config =="
+            mkdir -p /etc/softhsm2 /var/lib/softhsm/tokens
+            echo "directories.tokendir = /var/lib/softhsm/tokens" > "$SOFTHSM2_CONF"
+            echo "== init token =="
+            softhsm2-util --init-token --free --label IMMERSE --so-pin "$SO_PIN" --pin "$PIN"
+            echo "== list token slots =="
+            pkcs11-tool --module "$SOFTHSM_MODULE" --list-token-slots || true
+            echo "== done =="
+        volumeMounts:
+        - { name: tokendb, mountPath: /var/lib/softhsm }
+        - { name: conf,    mountPath: /etc/softhsm2 }
+      volumes:
+      - name: tokendb
+        persistentVolumeClaim: { claimName: softhsm-pvc }
+      - name: conf
+        emptyDir: {}

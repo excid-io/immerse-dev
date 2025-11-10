@@ -1,0 +1,12 @@
+# Dockerfile.backend
+FROM node:20-bullseye
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY backend.mjs ./
+ENV PORT=4000
+ENV ATTESTER_URL=http://cvm-attester.cvm-security.svc.cluster.local:5000
+ENV TOKEN_AUD=https://issuer.example/oidc
+ENV WALLET_INSTANCE=default
+EXPOSE 4000
+CMD ["node", "--experimental-global-webcrypto", "backend.mjs"]

@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cvm-attester
+  namespace: cvm-security
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: cvm-attester }
+  template:
+    metadata:
+      labels: { app: cvm-attester }
+    spec:
+      serviceAccountName: cvm-attester-sa
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+
+      initContainers:
+        # 0) root: make PVC paths & chown so non-root can write
+        - name: prep-perms
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -ex
+              mkdir -p /data/softhsm/tokens /etc/softhsm2
+              chown -R 1000:1000 /data/softhsm /etc/softhsm2
+              ls -ld /data/softhsm /data/softhsm/tokens /etc/softhsm2
+          volumeMounts:
+            - { name: tokendb, mountPath: /data/softhsm }
+            - { name: conf,    mountPath: /etc/softhsm2 }
+          securityContext:
+            runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+
+        # 1) non-root: ensure AKEY exists in SoftHSM token
+        - name: ensure-akey
+          image: cvm-attester:local
+          imagePullPolicy: Never
+          env:
+            - name: PIN
+              valueFrom: { secretKeyRef: { name: softhsm-pins, key: PIN } }
+            - name: SOFTHSM2_CONF
+              value: /etc/softhsm2/softhsm2.conf
+            - name: SOFTHSM_MODULE
+              value: /usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -ex
+              id
+              echo "directories.tokendir = /data/softhsm/tokens" > "$SOFTHSM2_CONF"
+              if ! pkcs11-tool --module "$SOFTHSM_MODULE" --login --pin "$PIN" --list-objects | grep -q "label: *AKEY"; then
+                pkcs11-tool --module "$SOFTHSM_MODULE" \
+                  --login --pin "$PIN" \
+                  --keypairgen --key-type EC:prime256v1 --label AKEY --id 01
+              fi
+          volumeMounts:
+            - { name: tokendb, mountPath: /data/softhsm }
+            - { name: conf,    mountPath: /etc/softhsm2 }
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+
+      containers:
+        - name: attester
+          image: cvm-attester:local
+          imagePullPolicy: IfNotPresent
+          ports: [{ containerPort: 5000 }]
+          env:
+            - name: ALLOWED_SUBJECTS
+              value: "system:serviceaccount:cvm-wallets:wallet-sa"
+            - name: ALLOWED_NAMESPACES
+              value: "cvm-wallets"
+            - name: ALLOWED_SERVICEACCOUNTS
+              value: "wallet-sa"
+
+
+            # PKCS#11 / SoftHSM config
+            - { name: SOFTHSM2_CONF, value: /etc/softhsm2/softhsm2.conf }
+            - { name: PKCS11_MODULE, value: /usr/lib/x86_64-linux-gnu/softhsm/libsofthsm2.so }
+            - { name: PKCS11_URI,    value: "pkcs11:token=IMMERSE;object=AKEY;type=private" }
+            - name: PKCS11_PIN
+              valueFrom: { secretKeyRef: { name: softhsm-pins, key: PIN } }
+            - { name: AKEY_PEM_PATH, value: "/keys/akey.pem" }
+
+          volumeMounts:
+            - { name: tokendb, mountPath: /data/softhsm }
+            - { name: conf,    mountPath: /etc/softhsm2 }
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+
+      volumes:
+        - name: tokendb
+          persistentVolumeClaim: { claimName: softhsm-pvc }
+        - name: conf
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cvm-attester
+  namespace: cvm-security
+spec:
+  selector: { app: cvm-attester }
+  ports:
+    - port: 5000
+      targetPort: 5000

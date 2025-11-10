@@ -1,0 +1,14 @@
+# Dockerfile.attester
+FROM node:20-bullseye
+
+RUN apt-get update && apt-get install -y \
+    openssl softhsm2 p11-kit libengine-pkcs11-openssl opensc ca-certificates curl \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --omit=dev
+
+COPY attestation-service.mjs ./
+EXPOSE 5000
+CMD ["node", "attestation-service.mjs"]

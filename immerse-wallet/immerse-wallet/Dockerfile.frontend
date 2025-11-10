@@ -1,0 +1,16 @@
+# Dockerfile.frontend
+FROM node:20-alpine
+
+WORKDIR /app
+COPY frontend ./frontend
+COPY gateway.js ./gateway.js
+# only what we need for the gateway
+RUN npm init -y \
+ && npm i express http-proxy-middleware
+
+ENV NODE_ENV=production
+# default for local; K8s will override
+ENV BACKEND_URL=http://127.0.0.1:4000
+
+EXPOSE 8080
+CMD ["node", "gateway.js"]

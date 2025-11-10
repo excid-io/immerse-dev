@@ -1,0 +1,2405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMMERSE Wallet</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --danger: #f94144;
+            --transition: all 0.3s ease;
+            --ar-controls-h: 84px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 28px;
+            color: var(--success);
+        }
+
+        .auth-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            background: transparent;
+            color: var(--light);
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+        }
+
+        .mode-btn i {
+            margin-right: 8px;
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1, h2, h3 {
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* Canvas for 3D/AR */
+        #canvas-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        #preview-canvas, #ar-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .simulation-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .control-btn i {
+            margin-right: 8px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .instruction-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            max-width: 400px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: white;
+            margin-left: 2px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 2D UI specific */
+        .ui-2d {
+            display: block;
+        }
+
+        /* 3D Preview specific */
+        .ui-preview {
+            display: none;
+        }
+
+        /* AR specific */
+        .ui-ar {
+            display: none;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Credential List */
+        .credential-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .credential-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .credential-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .credential-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .credential-type {
+            font-weight: 600;
+            color: var(--primary);
+            flex: 1;
+            min-width: 60%;
+        }
+
+        .credential-date {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            order: 3;
+            width: 100%;
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+
+        .credential-content {
+            margin-bottom: 1rem;
+        }
+
+        .credential-content p {
+            margin: 0.25rem 0;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .credential-content i {
+            opacity: 0.75;
+            margin-right: 0.25rem;
+        }
+
+        .credential-badge {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            order: 2;
+        }
+
+        .credential-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .credential-actions .btn {
+            flex: 1;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(30, 30, 46, 0.9);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        #alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 350px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: rgba(203, 213, 225, 0.5);
+        }
+
+        /* Instructions */
+        .instructions {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Verification Items */
+        .verification-item {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Disclosure Styles */
+        .disclosure-modal {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .disclosure-list {
+            margin: 1rem 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .disclosure-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+
+        .disclosure-item:last-child {
+            border-bottom: none;
+        }
+
+        .disclosure-item input[type="checkbox"] {
+            margin-right: 0.75rem;
+        }
+
+        .disclosure-item label {
+            flex: 1;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .disclosure-claim {
+            font-weight: 500;
+        }
+
+        .disclosure-value {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.25rem;
+        }
+
+        .selective-options {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .use-selective-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .use-selective-checkbox input {
+            margin-right: 0.5rem;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none;
+        }
+
+        /* AR specific styles */
+        body.ar-active .ui-ar.card {
+            background: transparent;
+            border: 0;
+            backdrop-filter: none;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        body.ar-active #ar-container {
+            height: calc(100svh - var(--ar-controls-h));
+            margin: 0;
+            border-radius: 0;
+        }
+
+        body.ar-active #ar-container .instruction-box {
+            bottom: 16px;
+            pointer-events: none;
+            z-index: 10;
+            background: rgba(0,0,0,0.40);
+        }
+
+        body.ar-active .ui-ar .simulation-controls {
+            position: relative;
+            z-index: 20;
+            margin-top: 0;
+            padding-top: 12px;
+            background: transparent;
+        }
+
+        #ar-canvas { touch-action: none; }
+        #ar-container { position: relative; }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .auth-section {
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .mode-btn {
+                width: 100%;
+                margin: 0;
+                justify-content: center;
+            }
+
+            #canvas-container {
+                height: 350px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .credential-list {
+                grid-template-columns: 1fr;
+            }
+
+            .simulation-controls {
+                flex-wrap: wrap;
+                gap: 10px 10px;
+                justify-content: center;
+                padding: 8px 12px;
+            }
+
+            .simulation-controls .control-btn {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 140px;
+                justify-content: center;
+            }
+
+            .instruction-box {
+                max-width: min(90vw, 420px);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container { padding: 12px; }
+            .card { padding: 18px; }
+            #canvas-container { height: min(55vh, 360px); }
+        }
+
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* for view cred fix */
+        .cred-tab-active {
+          outline: 1px solid rgba(255,255,255,.15);
+          border-radius: 8px;
+        }
+
+        /* tab buttons inside credential modal */
+        #credential-modal .tabbar .btn { padding:8px 14px }
+        #credential-modal pre {
+          background: rgba(255,255,255,0.04);
+          border:1px solid rgba(255,255,255,0.08);
+          border-radius:12px;
+          padding:12px;
+          max-height:50vh;
+          overflow:auto;
+        }
+        #credential-modal .tabbar .btn.active {
+          background: var(--primary);
+          color:#fff;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-shield-alt logo-icon"></i>
+                <span>IMMERSE Wallet</span>
+            </div>
+            <div class="auth-section">
+                <button id="login-btn" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button id="logout-btn" class="btn btn-outline hidden">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="2d"><i class="fas fa-desktop"></i> 2D Preview</button>
+            <button class="mode-btn" data-mode="preview"><i class="fas fa-vr-cardboard"></i> 3D Preview</button>
+            <button class="mode-btn" data-mode="ar"><i class="fas fa-glasses"></i> AR Experience</button>
+        </div>
+
+        <!-- 2D Desktop UI -->
+        <section class="ui-2d card">
+            <!-- Login Section -->
+            <div id="login-section" class="section active">
+                <div class="card-header">
+                    <h2 class="card-title">Login to Your Wallet</h2>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter password">
+                </div>
+                <button id="do-login" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section">
+                <div class="card-header">
+                    <h2 class="card-title">My Verifiable Credentials</h2>
+                </div>
+                <div class="instructions">
+                    <h3><i class="fas fa-info-circle"></i> How to add credentials</h3>
+                    <p>Click on a credential offer link from an issuer. It will lead you to your wallet and you will be able to see your Verifiable Credential appear below.</p>
+                </div>
+
+                <div id="credentials-container" class="credential-list">
+                    <!-- Credentials will be dynamically added here -->
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No credentials yet</h3>
+                        <p>Add a credential using a deep link to get started</p>
+                    </div>
+                </div>
+
+                <div class="card-header">
+                    <h2 class="card-title">Verification Requests</h2>
+                </div>
+                <div class="instructions">
+                    <h3><i class="fas fa-info-circle"></i> How to verify credentials</h3>
+                    <p>Click on a verification request link from a verifier.</p>
+                </div>
+
+                <div id="verification-requests-container">
+                    <!-- Verification requests will be dynamically added here -->
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>No pending verifications</h3>
+                        <p>Add a verification request using a deep link when asked to verify your credentials</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3D Preview UI -->
+        <section class="ui-preview card">
+            <h1>3D Wallet Experience</h1>
+            <p>Explore your credentials in an immersive 3D environment. Interact with your credentials as floating objects in a virtual space.</p>
+
+            <div id="canvas-container">
+                <canvas id="preview-canvas"></canvas>
+                <div class="instruction-box" id="instruction-box"></div>
+            </div>
+
+            <div class="simulation-controls">
+                <button class="control-btn" id="sound-toggle"><i class="fas fa-volume-mute"></i> Sound Off</button>
+                <button class="control-btn" id="replay-instructions"><i class="fas fa-redo"></i> Replay Instructions</button>
+                <button class="control-btn" id="enter-ar"><i class="fas fa-glasses"></i> Enter AR</button>
+                <button class="control-btn" id="back-to-2d"><i class="fas fa-arrow-left"></i> Back to 2D</button>
+            </div>
+        </section>
+
+        <!-- AR Experience UI -->
+        <section class="ui-ar card">
+            <h1>AR Wallet Experience</h1>
+            <p>View and interact with your credentials in augmented reality. Place your wallet in the real world and explore your credentials spatially.</p>
+
+            <div id="ar-container">
+                <canvas id="ar-canvas"></canvas>
+                <div class="instruction-box" id="ar-instruction-box"></div>
+            </div>
+
+            <div class="simulation-controls">
+                <button class="control-btn" id="ar-sound-toggle"><i class="fas fa-volume-mute"></i> Sound Off</button>
+                <button class="control-btn" id="ar-replay-instructions"><i class="fas fa-redo"></i> Replay Instructions</button>
+                <button class="control-btn" id="exit-ar"><i class="fas fa-times"></i> Exit AR</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Verification Details Modal -->
+    <div id="verification-modal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close" id="close-verification-modal">&times;</button>
+            <h2>Verification Request</h2>
+            <div id="verification-details">
+                <!-- Verification details will be added here -->
+            </div>
+            <div id="disclosure-ui" style="margin-top:12px"></div>
+            <button id="submit-verification" class="btn btn-primary">Submit Verification</button>
+        </div>
+    </div>
+
+<!-- Credential Details Modal -->
+<div id="credential-modal" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" id="close-credential-modal">&times;</button>
+    <h2>Credential Details</h2>
+
+    <div class="tabbar" style="display:flex;gap:.5rem;margin:.75rem 0 1rem;flex-wrap:wrap">
+      <button class="btn btn-secondary" data-tab="overview">Overview</button>
+      <button class="btn btn-secondary" data-tab="jwt">JWT</button>
+      <button class="btn btn-secondary" data-tab="json">JSON</button>
+      <span style="flex:1"></span>
+      <button id="cred-copy" class="btn btn-outline"><i class="fas fa-copy"></i> Copy</button>
+      <button id="cred-download" class="btn btn-primary"><i class="fas fa-download"></i> Download</button>
+    </div>
+
+    <div id="cred-pane-overview" class="cred-pane"></div>
+    <pre id="cred-pane-jwt" class="cred-pane hidden" style="white-space:pre-wrap;"></pre>
+    <pre id="cred-pane-json" class="cred-pane hidden" style="white-space:pre-wrap;"></pre>
+  </div>
+</div>
+
+
+
+    <!-- Alert Container -->
+    <div id="alert-container"></div>
+
+    <script>
+        // Global state -- updates for sd-jwt
+        const state = {
+            sessionToken: localStorage.getItem('sessionToken') || null,
+            credentials: [],
+            verificationRequests: [],
+            currentVerification: null,
+            backendUrl: '/api',
+            selectivePresentations: {} // store selective presentations
+        };
+
+        // Audio and voice setup
+        const audio = { ctx: null, gain: null, enabled: false };
+
+        // Typing functionality
+        const typingState = {};
+        const lastInstruction = {};
+
+        // 3D scene variables
+        let previewInit = false;
+        let raycaster, pointer, clickableObjects = [];
+
+        // Initialize the application
+        function init() {
+            checkAuthState();
+            setupEventListeners();
+            checkForDeepLinks();
+            setMode('2d'); // Start in 2D mode
+        }
+
+        // Check for deep links in URL parameters
+        function checkForDeepLinks() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const credentialOffer = urlParams.get('credential_offer');
+            const verificationRequest = urlParams.get('verification_request');
+
+            if (credentialOffer && state.sessionToken) {
+                processDeepLink('offer', credentialOffer);
+            }
+
+            if (verificationRequest && state.sessionToken) {
+                processDeepLink('verification', verificationRequest);
+            }
+        }
+
+        // Check authentication state and update UI
+        function checkAuthState() {
+            if (state.sessionToken) {
+                showDashboard();
+                loadCredentials();
+            } else {
+                showLogin();
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Auth buttons
+            document.getElementById('do-login').addEventListener('click', handleLogin);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+            // Mode switching
+            document.querySelectorAll('.mode-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const mode = this.getAttribute('data-mode');
+                    sfx('chime');
+                    setMode(mode);
+                });
+            });
+
+            // Sound toggles
+            bindSoundButton('sound-toggle');
+            bindSoundButton('ar-sound-toggle');
+            setSoundEnabled(false);
+
+            // 3D Preview controls
+            document.getElementById('replay-instructions').addEventListener('click', replayPreviewInstructions);
+            document.getElementById('enter-ar').addEventListener('click', () => setMode('ar'));
+            document.getElementById('back-to-2d').addEventListener('click', () => setMode('2d'));
+
+            // AR controls
+            document.getElementById('ar-replay-instructions').addEventListener('click', replayARInstructions);
+            document.getElementById('exit-ar').addEventListener('click', exitAR);
+
+            // Verification modal
+            document.getElementById('close-verification-modal').addEventListener('click', closeVerificationModal);
+            document.getElementById('submit-verification').addEventListener('click', handleVerificationSubmit);
+        }
+
+        // Mode switching functionality
+        function setMode(mode) {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+
+            // Update active button
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+            });
+
+            // Show/hide sections
+            document.querySelectorAll('[class^="ui-"]').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            const showSection = document.querySelector('.ui-' + mode);
+            if (showSection) showSection.style.display = 'block';
+
+            // Initialize mode if needed
+            if (mode === 'preview') initPreviewMode();
+            else if (mode === 'ar') {
+                document.body.classList.add('ar-active');
+                setArControlsHeight();
+                initARMode(true);
+            } else {
+                document.body.classList.remove('ar-active');
+            }
+        }
+
+        // AR controls height adjustment
+        function setArControlsHeight() {
+            const controls = document.querySelector('.ui-ar .simulation-controls');
+            if (!controls) return;
+            const h = controls.offsetHeight + 12;
+            document.documentElement.style.setProperty('--ar-controls-h', h + 'px');
+        }
+
+        // Audio functions
+        function ensureAudioCtx() {
+            if (!audio.ctx) {
+                audio.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                audio.gain = audio.ctx.createGain();
+                audio.gain.gain.value = 0.25;
+                audio.gain.connect(audio.ctx.destination);
+            }
+            if (audio.ctx.state === 'suspended') {
+                audio.ctx.resume();
+            }
+        }
+
+        function setSoundEnabled(on) {
+            audio.enabled = !!on;
+            if (audio.enabled) ensureAudioCtx();
+            updateSoundButtons();
+
+            window.addEventListener('pointerdown', function(){
+                if (audio.enabled) ensureAudioCtx();
+            }, { once: true });
+
+            window.addEventListener('keydown', function(){
+                if (audio.enabled) ensureAudioCtx();
+            }, { once: true });
+
+            if (audio.enabled) {
+                try {
+                    let activeElId = null;
+                    if (document.querySelector('.ui-preview') && document.querySelector('.ui-preview').style.display !== 'none') {
+                        activeElId = 'instruction-box';
+                    } else if (document.querySelector('.ui-ar') && document.querySelector('.ui-ar').style.display !== 'none') {
+                        activeElId = 'ar-instruction-box';
+                    }
+                    const text = activeElId ? lastInstruction[activeElId] : null;
+                    if (text) {
+                        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                        speak(text);
+                    }
+                } catch (_) {}
+            } else {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function sfx(kind) {
+            if (!audio.enabled) return;
+            ensureAudioCtx();
+
+            const now = audio.ctx.currentTime;
+            const o = audio.ctx.createOscillator();
+            const g = audio.ctx.createGain();
+            o.connect(g);
+            g.connect(audio.gain);
+
+            if (kind === 'tick') {
+                o.type = 'square';
+                o.frequency.setValueAtTime(1200, now);
+                g.gain.setValueAtTime(0.08, now);
+                g.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+                o.start(now);
+                o.stop(now + 0.08);
+            } else {
+                o.type = 'sine';
+                o.frequency.setValueAtTime(880, now);
+                o.frequency.exponentialRampToValueAtTime(440, now + 0.22);
+                g.gain.setValueAtTime(0.12, now);
+                g.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+                o.start(now);
+                o.stop(now + 0.26);
+            }
+        }
+
+        function updateSoundButtons() {
+            ['sound-toggle','ar-sound-toggle'].forEach(function(id){
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                btn.innerHTML = '<i class="' + (audio.enabled ? 'fas fa-volume-up' : 'fas fa-volume-mute') + '"></i> ' + (audio.enabled ? 'Sound On' : 'Sound Off');
+            });
+        }
+
+        // Voice synthesis setup
+        let selectedVoice = null;
+        const VOICE_PREFERENCE = [
+            'Microsoft Aria Online (Natural) - English (United States)',
+            'Microsoft Jenny Online (Natural) - English (United States)',
+            'Microsoft Guy Online (Natural)',
+            'Google US English',
+            'Google UK English Female',
+            'Google UK English Male',
+            'Samantha', 'Ava', 'Alex', 'Victoria', 'Karen', 'Daniel'
+        ];
+        const VOICE_LANGS = ['en-US','en-GB','en-AU','en-CA'];
+
+        function pickVoice() {
+            const voices = window.speechSynthesis.getVoices();
+            if (!voices || !voices.length) return null;
+
+            for (const name of VOICE_PREFERENCE) {
+                const v = voices.find(v => v.name === name);
+                if (v) return v;
+            }
+
+            for (const hint of VOICE_PREFERENCE) {
+                const v = voices.find(v => v.name.toLowerCase().includes(hint.toLowerCase()));
+                if (v) return v;
+            }
+
+            const byLang = voices.find(v => VOICE_LANGS.includes((v.lang || '').trim()));
+            return byLang || voices[0];
+        }
+
+        function initVoiceOnce() {
+            if (!('speechSynthesis' in window) || selectedVoice) return;
+            const haveNow = window.speechSynthesis.getVoices();
+            if (haveNow && haveNow.length) {
+                selectedVoice = pickVoice();
+            } else {
+                window.speechSynthesis.onvoiceschanged = () => {
+                    if (!selectedVoice) selectedVoice = pickVoice();
+                };
+            }
+        }
+        initVoiceOnce();
+
+        function speak(text) {
+            if (!audio.enabled) return;
+            if (!('speechSynthesis' in window)) return;
+
+            initVoiceOnce();
+            try {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                if (selectedVoice) u.voice = selectedVoice;
+                u.rate = 0.95;
+                u.pitch = 1.0;
+                u.volume = 1.0;
+                window.speechSynthesis.speak(u);
+            } catch (e) {
+                console.warn('TTS error:', e);
+            }
+        }
+
+        // Typing functionality
+        function clearTyping(elementId) {
+            const st = typingState[elementId];
+            if (st && st.timer) clearTimeout(st.timer);
+            typingState[elementId] = null;
+        }
+
+        function typeInstruction(text, elementId, speed = 40) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            lastInstruction[elementId] = text;
+            clearTyping(elementId);
+
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            speak(text);
+
+            const token = Symbol('typing');
+            typingState[elementId] = { token: token, timer: null };
+
+            el.innerHTML = '';
+            const tn = document.createTextNode('');
+            el.appendChild(tn);
+
+            let i = 0;
+            const tickEvery = 3;
+
+            function step() {
+                const st = typingState[elementId];
+                if (!st || st.token !== token) return;
+                if (i < text.length) {
+                    tn.data += text.charAt(i);
+                    if (audio.enabled && (i % tickEvery === 0)) sfx('tick');
+                    i++;
+                    st.timer = setTimeout(step, speed);
+                } else {
+                    el.insertAdjacentHTML('beforeend', '<span class="typing-cursor"></span>');
+                }
+            }
+            step();
+        }
+
+        function bindSoundButton(id) {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('click', function(){
+                setSoundEnabled(!audio.enabled);
+                sfx('chime');
+            }, { passive: true });
+        }
+
+        // Text label sprites for each credential
+        function makeLabelSprite(text) {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const pad = 8;
+          ctx.font = '14px Segoe UI, sans-serif';
+          const w = Math.ceil(ctx.measureText(text).width) + pad*2;
+          const h = 28;
+          canvas.width = w * 2; canvas.height = h * 2; // hi-DPI
+          const c = canvas.getContext('2d');
+          c.scale(2,2);
+          c.font = '14px Segoe UI, sans-serif';
+          c.fillStyle = 'rgba(0,0,0,.55)';
+          c.fillRect(0,0,w,h);
+          c.fillStyle = '#fff';
+          c.fillText(text, pad, 18);
+          c.strokeStyle = 'rgba(255,255,255,.25)';
+          c.strokeRect(0.5,0.5,w-1,h-1);
+
+          const tex = new THREE.CanvasTexture(canvas);
+          tex.minFilter = THREE.LinearFilter;
+          const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+          const sp = new THREE.Sprite(mat);
+          sp.scale.set(w/140, h/140, 1); // size in scene
+          return sp;
+        }
+
+        function addStarfield(scene, count=300, radius=12) {
+          const g = new THREE.BufferGeometry();
+          const pos = new Float32Array(count*3);
+          for (let i=0;i<count;i++){
+            const r = radius*(0.7+Math.random()*0.6);
+            const a = Math.random()*Math.PI*2;
+            const b = (Math.random()-0.5)*Math.PI;
+            pos[i*3]   = r*Math.cos(a)*Math.cos(b);
+            pos[i*3+1] = r*Math.sin(b);
+            pos[i*3+2] = r*Math.sin(a)*Math.cos(b);
+          }
+          g.setAttribute('position', new THREE.BufferAttribute(pos,3));
+          const pts = new THREE.Points(g, new THREE.PointsMaterial({ size:0.02, color:0x4cc9f0, opacity:.7, transparent:true }));
+          pts.userData.__isStarfield = true;
+          scene.add(pts);
+          return pts;
+        }
+
+
+        function initPreviewMode() {
+          const instructions =
+            "Welcome to your 3D wallet! Explore your credentials in space. Hover to highlight and click any credential to see its details.";
+
+          if (previewInit) {
+            if (!window.__suppressPreviewTyping) {
+              clearTyping('instruction-box');
+              typeInstruction(instructions, 'instruction-box');
+            }
+            return;
+          }
+          previewInit = true;
+
+          const canvas = document.getElementById('preview-canvas');
+          const scene = new THREE.Scene();
+          scene.background = new THREE.Color(0x0f0c29);
+
+          const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+          renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+          const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.05, 1000);
+          camera.position.set(0, 0.6, 6.5);
+
+          const controls = new THREE.OrbitControls(camera, renderer.domElement);
+          controls.enableDamping = true;
+          controls.dampingFactor = 0.05;
+          controls.minDistance = 1.2;
+          controls.maxDistance = 18;
+
+          // lights
+          scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+          const dir = new THREE.DirectionalLight(0xffffff, 0.9);
+          dir.position.set(5, 6, 7);
+          scene.add(dir);
+
+          // backdrop
+          const stars = addStarfield(scene, 320, 14);
+
+          // centerpiece (torus knot + rings)
+          const knot = new THREE.Mesh(
+            new THREE.TorusKnotGeometry(1.05, 0.18, 180, 24, 2, 3),
+            new THREE.MeshPhongMaterial({
+              color: 0x2b77ff,
+              emissive: 0x142a66,
+              specular: 0x88ccff,
+              shininess: 110,
+              transparent: true,
+              opacity: 0.92
+            })
+          );
+          scene.add(knot);
+
+          const ringGroup = new THREE.Group();
+          const ringMat = new THREE.MeshPhongMaterial({
+            color: 0x2dd4bf,
+            emissive: 0x0c6e62,
+            shininess: 80,
+            transparent: true,
+            opacity: 0.8
+          });
+          [0,1,2].forEach(i => {
+            const t = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.035, 16, 180), ringMat);
+            if (i===0) t.rotation.x = Math.PI*0.5;
+            if (i===1) t.rotation.y = Math.PI*0.5;
+            if (i===2) t.rotation.z = Math.PI*0.5;
+            ringGroup.add(t);
+          });
+          scene.add(ringGroup);
+
+          // build credential meshes 
+          createCredentialObjects(scene);
+
+          // raycasting/hover
+          raycaster = new THREE.Raycaster();
+          pointer = new THREE.Vector2();
+          let hovered = null;
+
+          function updatePointer(e) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+          }
+
+          function doHover() {
+            raycaster.setFromCamera(pointer, camera);
+            const hit = raycaster.intersectObjects(clickableObjects, false)[0];
+            if (hit && hit.object !== hovered) {
+              if (hovered) {
+                hovered.material.emissiveIntensity = hovered.userData.__baseEm || 0.25;
+                hovered.scale.setScalar(hovered.userData.__baseScale || 1);
+              }
+              hovered = hit.object;
+              hovered.userData.__baseEm = hovered.material.emissiveIntensity;
+              hovered.userData.__baseScale = hovered.scale.x;
+              hovered.material.emissiveIntensity = 1.0;
+              hovered.scale.setScalar((hovered.userData.__baseScale || 1) * 1.08);
+              sfx('tick');
+              renderer.domElement.style.cursor = 'pointer';
+            }
+            if (!hit && hovered) {
+              hovered.material.emissiveIntensity = hovered.userData.__baseEm || 0.25;
+              hovered.scale.setScalar(hovered.userData.__baseScale || 1);
+              hovered = null;
+              renderer.domElement.style.cursor = 'default';
+            }
+          }
+
+          renderer.domElement.addEventListener('pointermove', (e)=>{ updatePointer(e); doHover(); }, { passive: true });
+          renderer.domElement.addEventListener('click', (e)=>{
+            updatePointer(e); doHover();
+            if (hovered) {
+              sfx('chime');
+              const idx = hovered.userData.credentialIndex;
+              viewCredentialDetails(idx);
+            }
+          });
+
+          // animate
+          function animate(t){
+            requestAnimationFrame(animate);
+            const tt = t*0.001;
+            knot.rotation.x += 0.0045;
+            knot.rotation.y += 0.0090;
+            ringGroup.rotation.x = Math.sin(tt*0.7)*0.22;
+            ringGroup.rotation.y = Math.cos(tt*0.6)*0.22;
+            stars.rotation.y += 0.0007;
+
+            // clickableObjects credentials
+            clickableObjects.forEach((m,i)=>{
+              m.position.y = 0.25*Math.sin(tt*0.8 + i*0.7);
+            });
+
+            controls.update();
+            renderer.render(scene, camera);
+          }
+          animate(0);
+
+          // responsive
+          window.addEventListener('resize', ()=>{
+            camera.aspect = canvas.clientWidth/canvas.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+          });
+
+          clearTyping('instruction-box');
+          typeInstruction(instructions, 'instruction-box');
+        }
+
+        function createCredentialObjects(scene) {
+          const survivors = [];
+          scene.traverse(o => {
+            if (o.isLight || o.userData.__isStarfield || o.geometry?.type?.includes('TorusKnot')) survivors.push(o);
+          });
+          while (scene.children.length) scene.remove(scene.children[0]);
+          survivors.forEach(o => scene.add(o));
+
+          clickableObjects = [];
+
+          if (state.credentials.length === 0) {
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+              color: 0x64748b,
+              emissive: 0x334155,
+              emissiveIntensity: 0.12,
+              transparent: true,
+              opacity: 0.6
+            });
+            const placeholder = new THREE.Mesh(geometry, material);
+            placeholder.position.set(0,0,0);
+            scene.add(placeholder);
+            return;
+          }
+
+          const radius = 3.2;
+          state.credentials.forEach((cred, index) => {
+            const isSd = cred.includes('~');
+
+            // choose geometry
+            const geo = isSd
+              ? new THREE.OctahedronGeometry(0.55, 0)
+              : new THREE.BoxGeometry(0.9, 0.9, 0.14);
+
+            const color = isSd ? 0x4cc9f0 : 0x4361ee;
+            const em    = isSd ? 0x0b60c0 : 0x3a0ca3;
+
+            const mat = new THREE.MeshPhongMaterial({
+              color,
+              emissive: em,
+              emissiveIntensity: 0.25,
+              shininess: 100,
+              specular: 0x88ccff
+            });
+
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.userData.credentialIndex = index;
+
+            // ring accent
+            const ring = new THREE.Mesh(
+              new THREE.TorusGeometry(isSd?0.75:0.7, 0.03, 12, 80),
+              new THREE.MeshPhongMaterial({ color: 0xffffff, opacity:.35, transparent:true, emissive: em, emissiveIntensity:.35 })
+            );
+            ring.rotation.x = Math.PI * 0.5;
+
+            // label
+            let labelText = `Credential ${index+1}`;
+            try {
+              const jwtPart = isSd ? cred.split('~')[0] : cred;
+              const p = JSON.parse(atob(jwtPart.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+              const subj = p?.vc?.credentialSubject || {};
+              const title = Array.isArray(p?.vc?.type)
+                ? (p.vc.type.find(t => t!=='VerifiableCredential') || 'Verifiable Credential')
+                : (p?.vc?.type || 'Verifiable Credential');
+              labelText = (subj.name || subj.fullName || subj.studentId || title);
+            } catch {}
+
+            const label = makeLabelSprite(labelText);
+            label.position.set(0, -0.9, 0);
+
+            // group
+            const g = new THREE.Group();
+            g.add(mesh);
+            g.add(ring);
+            g.add(label);
+
+            const angle = (index / state.credentials.length) * Math.PI * 2;
+            g.position.set(Math.cos(angle)*radius, 0, Math.sin(angle)*radius);
+            g.lookAt(0,0,0);
+
+            scene.add(g);
+            clickableObjects.push(mesh); // main mesh as the click target
+          });
+        }
+
+        function replayPreviewInstructions() {
+            sfx('chime');
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            clearTyping('instruction-box');
+            typeInstruction(
+                "Welcome to your 3D wallet! Explore your credentials in this immersive space. Click on any credential to view details.",
+                'instruction-box'
+            );
+        }
+
+        let arClickableObjects = [];
+
+        // AR Mode Initialization
+        function initARMode(autoStart = false) {
+            const canvas = document.getElementById('ar-canvas');
+            const boxId = 'ar-instruction-box';
+
+            clearTyping(boxId);
+            const msg = navigator.xr
+                ? "Preparing AR& if nothing happens, your device/browser may not support WebXR AR."
+                : "WebXR not available. Use a supported browser/device.";
+            typeInstruction(msg, boxId, 40);
+
+            if (!navigator.xr) return;
+
+            const scene = new THREE.Scene();
+
+            const renderer = new THREE.WebGLRenderer({
+                canvas,
+                antialias: true,
+                alpha: true,
+                preserveDrawingBuffer: false,
+                powerPreference: 'high-performance'
+            });
+            renderer.xr.enabled = true;
+            renderer.xr.setReferenceSpaceType('local-floor');
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+            renderer.setClearColor(0x000000, 0);
+            renderer.autoClear = false;
+
+            const camera = new THREE.PerspectiveCamera();
+
+            // Lighting
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+            dir.position.set(1, 1, 1);
+            scene.add(dir);
+
+            // Create AR credential objects
+            const arGroup = new THREE.Group();
+            scene.add(arGroup);
+
+            const AR_SCALE = 0.30;
+            arGroup.scale.setScalar(AR_SCALE);
+
+            // --- the same starfield + centerpiece as preview ---
+        const stars = addStarfield(arGroup, 320, 14);  // same density/radius as preview
+
+        const knot = new THREE.Mesh(
+          new THREE.TorusKnotGeometry(1.05, 0.18, 180, 24, 2, 3),
+          new THREE.MeshPhongMaterial({
+            color: 0x2b77ff,
+            emissive: 0x142a66,
+            specular: 0x88ccff,
+            shininess: 110,
+            transparent: true,
+            opacity: 0.92
+          })
+        );
+        arGroup.add(knot);
+
+        const ringGroup = new THREE.Group();
+        const ringMat = new THREE.MeshPhongMaterial({
+          color: 0x2dd4bf,
+          emissive: 0x0c6e62,
+          shininess: 80,
+          transparent: true,
+          opacity: 0.8
+        });
+        [0,1,2].forEach(i => {
+          const t = new THREE.Mesh(new THREE.TorusGeometry(1.9, 0.035, 16, 180), ringMat);
+          if (i===0) t.rotation.x = Math.PI*0.5;
+          if (i===1) t.rotation.y = Math.PI*0.5;
+          if (i===2) t.rotation.z = Math.PI*0.5;
+          ringGroup.add(t);
+        });
+        arGroup.add(ringGroup);
+
+        // --- use the SAME credential builder as preview ---
+        createCredentialObjects(arGroup);
+        // keep AR's raycast list in sync with preview's global list
+        arClickableObjects = clickableObjects;
+
+        // allow refresh after credentials load
+        window.__refreshAR = () => {
+          createCredentialObjects(arGroup);
+          arClickableObjects = clickableObjects;
+        };
+
+            //createARCredentialObjects(arGroup);
+
+            let hudDistance = 3.0; //1.5;
+            let hudYaw = 0;
+
+            function placeInFrontOfViewer(refSpace, frame) {
+                const pose = frame.getViewerPose(refSpace);
+                if (!pose) return;
+                const { position: p, orientation: o } = pose.transform;
+                const q = new THREE.Quaternion(o.x, o.y, o.z, o.w);
+                const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(q);
+                const pos = new THREE.Vector3(p.x, p.y, p.z).add(forward.multiplyScalar(hudDistance));
+                pos.y -= 0.1;
+                arGroup.position.copy(pos);
+                arGroup.rotation.set(0, hudYaw, 0);
+            }
+
+            // AR gesture controls
+            function attachARGestures() {
+                const active = new Map();
+                let lastPinch = null;
+
+                function onDown(e) {
+                    if (e.target !== canvas) return;
+                    active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+                    canvas.setPointerCapture(e.pointerId);
+                    if (active.size === 2) lastPinch = pinchMeasure();
+                }
+
+                function onMove(e) {
+                    if (!active.has(e.pointerId)) return;
+                    const pt = active.get(e.pointerId);
+                    const dx = e.clientX - pt.x;
+                    const dy = e.clientY - pt.y;
+                    pt.x = e.clientX;
+                    pt.y = e.clientY;
+
+                    if (active.size === 1) {
+                        hudYaw += dx * 0.005;
+                    } else if (active.size === 2) {
+                        const cur = pinchMeasure();
+                        const delta = cur.dist - (lastPinch ? lastPinch.dist : cur.dist);
+                        hudDistance = Math.max(0.6, Math.min(3.0, hudDistance - delta * 0.003));
+                        lastPinch = cur;
+                    }
+                }
+
+                function onUp(e) {
+                    if (active.has(e.pointerId)) {
+                        active.delete(e.pointerId);
+                        try { canvas.releasePointerCapture(e.pointerId); } catch {}
+                    }
+                    if (active.size < 2) lastPinch = null;
+                }
+
+                function pinchMeasure() {
+                    const pts = [...active.values()];
+                    const dx = pts[0].x - pts[1].x;
+                    const dy = pts[0].y - pts[1].y;
+                    return { dist: Math.hypot(dx, dy) };
+                }
+
+                canvas.addEventListener('pointerdown', onDown);
+                canvas.addEventListener('pointermove', onMove);
+                canvas.addEventListener('pointerup', onUp);
+                canvas.addEventListener('pointercancel', onUp);
+
+                return () => {
+                    canvas.removeEventListener('pointerdown', onDown);
+                    canvas.removeEventListener('pointermove', onMove);
+                    canvas.removeEventListener('pointerup', onUp);
+                    canvas.removeEventListener('pointercancel', onUp);
+                };
+            }
+
+            let session = null;
+            const raycasterAR = new THREE.Raycaster();
+            //let arClickableObjects = [];
+
+            async function startSession() {
+                try {
+                    if (window.__xrStarting || window.__xrSession) return;
+                    window.__xrStarting = true;
+
+                    const supported = await navigator.xr.isSessionSupported('immersive-ar');
+                    if (!supported) {
+                        typeInstruction("'immersive-ar' not supported on this setup.", boxId, 40);
+                        return;
+                    }
+
+                    session = await navigator.xr.requestSession('immersive-ar', {
+                        requiredFeatures: ['local-floor'],
+                        optionalFeatures: ['dom-overlay', 'hit-test'],
+                        domOverlay: { root: document.body }
+                    });
+
+                    await renderer.xr.setSession(session);
+                    const detachGestures = attachARGestures();
+
+                    window.__xrSession = session;
+
+                    typeInstruction(
+                        "AR started. Look for your credentials floating in space. Aim and press your controller trigger to view details.",
+                        boxId
+                    );
+
+                    // Controller selection
+                    session.addEventListener('select', (ev) => {
+                        const ref = renderer.xr.getReferenceSpace();
+                        const pose = ev.frame.getPose(ev.inputSource.targetRaySpace, ref);
+                        if (!pose) return;
+
+                        const { position: p, orientation: o } = pose.transform;
+                        const origin = new THREE.Vector3(p.x, p.y, p.z);
+                        const dir = new THREE.Vector3(0, 0, -1);
+                        const q = new THREE.Quaternion(o.x, o.y, o.z, o.w);
+                        dir.applyQuaternion(q).normalize();
+
+                        raycasterAR.set(origin, dir);
+                        const intersects = raycasterAR.intersectObjects(arClickableObjects, true);
+
+                        if (intersects.length > 0) {
+                            sfx('chime');
+                            const credentialIndex = intersects[0].object.userData.credentialIndex;
+                            viewCredentialDetails(credentialIndex);
+                        } else {
+                            sfx('tick');
+                            clearTyping('ar-instruction-box');
+                            typeInstruction("Aim at a credential and press trigger to view details.", 'ar-instruction-box');
+                        }
+                    });
+
+                    session.addEventListener('end', () => {
+                      setTimeout(() => {
+                        renderer.setAnimationLoop(null);
+                        typeInstruction("AR session ended. Return to preview mode or tap 'Enter AR' to start again.", boxId);
+                        window.__xrSession = null;
+                        detachGestures && detachGestures();
+                      }, 5000);
+                    });
+
+                  renderer.setAnimationLoop((time, frame) => {
+                  const tt = time * 0.001;
+
+                  // same centerpiece motion
+                  knot.rotation.x += 0.0045;
+                  knot.rotation.y += 0.0090;
+                  ringGroup.rotation.x = Math.sin(tt*0.7)*0.22;
+                  ringGroup.rotation.y = Math.cos(tt*0.6)*0.22;
+                  stars.rotation.y += 0.0007;
+
+                  // same preview (uses global clickableObjects)
+                  clickableObjects.forEach((m,i)=>{
+                    m.position.y = 0.25*Math.sin(tt*0.8 + i*0.7);
+                  });
+
+                  if (frame) {
+                    const ref = renderer.xr.getReferenceSpace();
+                    placeInFrontOfViewer(ref, frame);
+                  }
+
+                  renderer.render(scene, camera);
+                });
+
+
+                } catch (err) {
+                    console.error('AR start failed:', err);
+                    typeInstruction("Failed to start AR: " + err.message, boxId);
+                }
+            }
+
+            window.__startImmersiveAR = startSession;
+
+            if (autoStart) startSession();
+
+            window.addEventListener('resize', () => {
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+            });
+        }
+
+        function replayARInstructions() {
+            sfx('chime');
+            clearTyping('ar-instruction-box');
+            const msg = lastInstruction['ar-instruction-box'] ||
+                (navigator.xr
+                    ? "AR started. Look for your credentials floating in space. Aim and press your controller trigger to view details."
+                    : "WebXR not available. Use a supported browser/device.");
+            typeInstruction(msg, 'ar-instruction-box');
+        }
+
+        function exitAR() {
+            sfx('chime');
+            const boxId = 'ar-instruction-box';
+            if (window.__xrSession){
+                window.__xrSession.end();
+            } else {
+                clearTyping(boxId);
+                typeInstruction("AR session ended. Tap 'Enter AR' to start again.", boxId);
+            }
+            document.body.classList.remove('ar-active');
+            window.__suppressPreviewTyping = true;
+            setTimeout(() => {
+                setMode('preview');
+                window.__suppressPreviewTyping = false;
+            }, 500);
+        }
+
+        // DOM Elements
+        const elements = {
+            loginSection: document.getElementById('login-section'),
+            dashboardSection: document.getElementById('dashboard-section'),
+            loginBtn: document.getElementById('login-btn'),
+            logoutBtn: document.getElementById('logout-btn'),
+            doLogin: document.getElementById('do-login'),
+            username: document.getElementById('username'),
+            password: document.getElementById('password'),
+            credentialsContainer: document.getElementById('credentials-container'),
+            verificationModal: document.getElementById('verification-modal'),
+            closeVerificationModal: document.getElementById('close-verification-modal'),
+            verificationDetails: document.getElementById('verification-details'),
+            submitVerification: document.getElementById('submit-verification'),
+            alertContainer: document.getElementById('alert-container'),
+            verificationRequestsContainer: document.getElementById('verification-requests-container')
+        };
+
+        // Show login section
+        function showLogin() {
+            elements.loginSection.classList.add('active');
+            elements.dashboardSection.classList.remove('active');
+            elements.loginBtn.classList.remove('hidden');
+            elements.logoutBtn.classList.add('hidden');
+        }
+
+        // Show dashboard section
+        function showDashboard() {
+            elements.loginSection.classList.remove('active');
+            elements.dashboardSection.classList.add('active');
+            elements.loginBtn.classList.add('hidden');
+            elements.logoutBtn.classList.remove('hidden');
+        }
+
+        // Handle login
+        async function handleLogin() {
+            const username = elements.username.value;
+            const password = elements.password.value;
+
+            if (!username || !password) {
+                showAlert('Please enter both username and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${state.backendUrl}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    state.sessionToken = data.session_token;
+                    localStorage.setItem('sessionToken', state.sessionToken);
+                    showDashboard();
+                    loadCredentials();
+                    showAlert('Login successful', 'success');
+
+                    // Check if there are deep links to process after login
+                    checkForDeepLinks();
+                } else {
+                    showAlert(data.error || 'Login failed', 'error');
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+                console.error('Login error:', error);
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            state.sessionToken = null;
+            localStorage.removeItem('sessionToken');
+            state.credentials = [];
+            showLogin();
+            showAlert('Logged out successfully', 'success');
+        }
+
+        // Process deep links (credential offers or verification requests)
+        async function processDeepLink(type, deepLinkValue = null) {
+            if (!state.sessionToken) {
+                showAlert('Please login first', 'error');
+                return;
+            }
+
+            let deepLink = deepLinkValue;
+            let endpoint;
+
+            if (!deepLink) {
+                return;
+            }
+
+            // Handle different deep link formats
+            if (type === 'offer' && deepLink.startsWith('openid-credential-offer://')) {
+                // Already in the correct format
+                endpoint = 'process-offer';
+            } else if (type === 'verification' && deepLink.startsWith('openid://')) {
+                // Already in the correct format
+                endpoint = 'process-presentation-request';
+            } else {
+                // Handle base64 encoded deep links
+                try {
+                    if (type === 'offer') {
+                        // Decode base64 and create the proper openid-credential-offer URI
+                        const decoded = atob(deepLink);
+                        const credentialOffer = JSON.parse(decoded);
+                        const encodedOffer = btoa(JSON.stringify(credentialOffer)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                        deepLink = `openid-credential-offer://?credential_offer=${encodedOffer}`;
+                        endpoint = 'process-offer';
+                    } else {
+                        // Decode base64 to get the verification request URI
+                        deepLink = atob(deepLink);
+                        endpoint = 'process-presentation-request';
+                    }
+                } catch (e) {
+                    showAlert('Invalid deep link format', 'error');
+                    return;
+                }
+            }
+
+            try {
+                const response = await fetch(`${state.backendUrl}/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.sessionToken}`
+                    },
+                    body: JSON.stringify({
+                        [type === 'offer' ? 'credentialOfferUri' : 'requestUri']: deepLink
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (type === 'offer') {
+                        showAlert('Credential successfully added to your wallet', 'success');
+                        loadCredentials(); // Refresh the credentials list
+
+                        // Refresh 3D and AR scenes if they're active
+                        if (previewInit) {
+                            const canvas = document.getElementById('preview-canvas');
+                            if (canvas) {
+                                const scene = new THREE.Scene();
+                                createCredentialObjects(scene);
+                            }
+                        }
+                    } else {
+                        showVerificationRequest(data);
+                    }
+
+                    // Clear the URL parameters after processing
+                    const url = new URL(window.location);
+                    url.searchParams.delete(type === 'offer' ? 'credential_offer' : 'verification_request');
+                    window.history.replaceState({}, document.title, url.toString());
+                } else {
+                    showAlert(data.error || `Failed to process ${type === 'offer' ? 'credential offer' : 'verification request'}`, 'error');
+                }
+            } catch (error) {
+                console.error(`Error processing ${type}:`, error);
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Load credentials from backend
+        async function loadCredentials() {
+            if (!state.sessionToken) return;
+
+            try {
+                const response = await fetch(`${state.backendUrl}/credentials`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${state.sessionToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    state.credentials = data.credentials || [];
+                    renderCredentials();
+                    if (window.__refreshAR) window.__refreshAR(); // new creds
+
+                } else {
+                    showAlert('Failed to load credentials', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading credentials:', error);
+            }
+        }
+
+        // Render credentials in 2D view
+        function renderCredentials() {
+            const container = elements.credentialsContainer;
+
+            if (!state.credentials.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No credentials yet</h3>
+                        <p>Add a credential using a deep link to get started</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = state.credentials.map((credential, index) => {
+                const isSdJwt = credential.includes('~');
+
+                // Parse JWT for display
+                let payload = {};
+                try {
+                    const jwtPart = isSdJwt ? credential.split('~')[0] : credential;
+                    const parts = jwtPart.split('.');
+                    if (parts.length >= 2) {
+                        payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    }
+                } catch (e) {
+                    console.error('Error parsing credential:', e);
+                }
+
+                const title = payload?.vc?.type ?
+                    (Array.isArray(payload.vc.type) ?
+                        payload.vc.type.find(t => t !== 'VerifiableCredential') || 'Verifiable Credential' :
+                        payload.vc.type) :
+                    'Verifiable Credential';
+
+                const when = payload?.iat ?
+                    new Date(payload.iat * 1000).toLocaleDateString() :
+                    'Unknown date';
+
+                const subject = payload?.vc?.credentialSubject || {};
+                const subjLabel = subject.name || [subject.givenName, subject.familyName].filter(Boolean).join(' ') ||
+                    subject.email || (subject.id && !String(subject.id).startsWith('urn:') ? subject.id : '');
+
+                const issuer = payload?.iss ?
+                    (() => { try { return new URL(payload.iss).host; } catch { return payload.iss; } })() :
+                    'Unknown';
+
+                return `
+                    <div class="credential-item">
+                        <div class="credential-header">
+                            <span class="credential-type">${title}</span>
+                            ${isSdJwt ? '<span class="credential-badge">Selective Disclosure</span>' : ''}
+                            <span class="credential-date">${when}</span>
+                        </div>
+                        <div class="credential-content">
+                            <p><strong>Issuer:</strong> ${issuer}</p>
+                            ${subjLabel ? `<p><strong>Subject:</strong> ${subjLabel}</p>` : ''}
+                            ${payload?.cnf?.jwk ? `<p><i class="fas fa-link"></i> Holder-bound</p>` : ''}
+                            ${isSdJwt ? `<p><i class="fas fa-shield-alt"></i> Contains selectively disclosable claims</p>` : ''}
+                        </div>
+                        <div class="credential-actions">
+                            <button class="btn btn-outline view-credential" data-index="${index}">
+                                <i class="fas fa-eye"></i> View Details
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners
+            document.querySelectorAll('.view-credential').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = e.currentTarget.dataset.index;
+                    viewCredentialDetails(index);
+                });
+            });
+        }
+
+        // some more helpers -- phase 4 wallet
+
+        function setTabs(active) {
+          document.querySelectorAll('#credential-modal .tabbar .btn[data-tab]').forEach(b=>{
+            b.classList.toggle('active', b.dataset.tab === active);
+          });
+          document.querySelectorAll('#credential-modal .cred-pane').forEach(p=>p.classList.add('hidden'));
+          document.getElementById(`cred-pane-${active}`).classList.remove('hidden');
+        }
+
+        async function copyToClipboard(text) {
+          try {
+            await navigator.clipboard.writeText(text);
+            showAlert('Copied to clipboard', 'success');
+          } catch {
+            // fallback
+            const ta = document.createElement('textarea');
+            ta.value = text; document.body.appendChild(ta);
+            ta.select(); document.execCommand('copy'); ta.remove();
+            showAlert('Copied to clipboard', 'success');
+          }
+        }
+
+
+        // helpers for pretty host parsing
+        function hostOf(u){ try{ return new URL(u).host; } catch{ return u; } }
+
+        function viewCredentialDetails(index) {
+          const raw = state.credentials[index];
+          let header={}, payload={};
+          try {
+            const jwtPart = raw.includes('~') ? raw.split('~')[0] : raw;
+            const [h,p] = jwtPart.split('.');
+            header  = JSON.parse(atob(h.replace(/-/g,'+').replace(/_/g,'/')));
+            payload = JSON.parse(atob(p.replace(/-/g,'+').replace(/_/g,'/')));
+          } catch (e) {
+            console.error(e);
+            return showAlert('Error parsing credential', 'error');
+          }
+
+          // Build Overview
+          const isSd = raw.includes('~');
+          const title = (payload?.vc?.type && (Array.isArray(payload.vc.type)
+            ? (payload.vc.type.find(t=>t!=='VerifiableCredential')||'Verifiable Credential')
+            : payload.vc.type)) || 'Verifiable Credential';
+          const issuer = payload?.iss ? (()=>{
+            try { return new URL(payload.iss).host; } catch { return payload.iss; }
+          })() : 'Unknown';
+          const subject = payload?.sub || payload?.vc?.credentialSubject?.id || '';
+          const iat = payload?.iat ? new Date(payload.iat*1000).toLocaleString() : '—';
+          const exp = payload?.exp ? new Date(payload.exp*1000).toLocaleString() : '—';
+          const holderBound = !!payload?.cnf?.jwk;
+
+          document.getElementById('cred-pane-overview').innerHTML = `
+            <div class="credential-item">
+              <div class="credential-header">
+                <span class="credential-type">${title}</span>
+                ${isSd ? '<span class="credential-badge">SD-JWT</span>' : ''}
+                <span class="credential-date">${iat !== '—' ? iat : ''}</span>
+              </div>
+              <div class="credential-content">
+                <p><strong>Issuer:</strong> ${issuer}</p>
+                ${subject ? `<p><strong>Subject:</strong> ${subject}</p>`:''}
+                <p><strong>Issued:</strong> ${iat}</p>
+                <p><strong>Expires:</strong> ${exp}</p>
+                ${holderBound ? `<p><i class="fas fa-link"></i> Holder-bound (DPoP/Key Binding)</p>`:''}
+                ${isSd ? `<p><i class="fas fa-shield-alt"></i> Contains selectively-disclosable claims</p>`:''}
+              </div>
+            </div>
+          `;
+
+          // JWT + JSON 
+          const jwtPart = raw.includes('~') ? raw.split('~')[0] : raw;
+          document.getElementById('cred-pane-jwt').textContent = jwtPart;
+          document.getElementById('cred-pane-json').textContent = JSON.stringify({ header, payload }, null, 2);
+
+          // Wire controls
+          const credModal = document.getElementById('credential-modal');
+          credModal.classList.add('active');
+
+          document.getElementById('close-credential-modal').onclick = ()=> credModal.classList.remove('active');
+
+          document.querySelectorAll('#credential-modal .tabbar .btn[data-tab]').forEach(b=>{
+            b.onclick = ()=> setTabs(b.dataset.tab);
+          });
+          setTabs('overview');
+
+          document.getElementById('cred-copy').onclick = ()=> copyToClipboard(jwtPart);
+
+          document.getElementById('cred-download').onclick = ()=>{
+            const blob = new Blob([jwtPart], { type:'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = `${title.replace(/\s+/g,'_')}.jwt.txt`;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+          };
+        }
+
+        // close button
+        document.getElementById('close-credential-modal').addEventListener('click', () => {
+          document.getElementById('credential-modal').classList.remove('active');
+        });
+
+        function showVerificationRequest(verificationData) {
+            state.currentVerification = verificationData;
+
+            // Build requested names set from PD - FIXED: use state.currentVerification
+            const REQUIRED_CLAIMS = new Set(
+                (state.currentVerification.requested_fields || [])
+                .map(f => f && f.name)
+                .filter(Boolean)
+            );
+
+            // Escape helper
+            const escapeHtml = (str) => String(str)
+                .replace(/&/g,'&amp;')
+                .replace(/</g,'&lt;')
+                .replace(/>/g,'&gt;');
+
+            // Header / purpose / requested list - FIXED: use state.currentVerification
+            const fieldsList = (state.currentVerification.requested_fields || [])
+                .map(f => `<li><strong>${escapeHtml(f.name)}</strong>: ${escapeHtml(f.purpose || 'Verification')}</li>`)
+                .join('');
+
+            // Mount base UI - FIXED: use state.currentVerification
+            elements.verificationDetails.innerHTML = `
+                <p><strong>Verifier:</strong> ${escapeHtml(state.currentVerification.request?.client_id || 'Verifier')}</p>
+                <p><strong>Purpose:</strong> ${escapeHtml(state.currentVerification.request?.presentation_definition?.purpose || 'Verification')}</p>
+                <div style="margin:.5rem 0">
+                    <strong>Requested (from PD):</strong>
+                    <ul>${fieldsList || '<li>None</li>'}</ul>
+                </div>
+                <p><strong>Matching Credentials:</strong> ${state.currentVerification.matching_credentials.length}</p>
+
+                <div class="form-group">
+                    <label class="form-label">Select Credential to Present</label>
+                    <select id="credential-select" class="form-input"></select>
+                </div>
+
+                <div class="selective-options">
+                    <h4 style="margin:.5rem 0;">Select which attributes to share</h4>
+                    <p style="color:rgba(255,255,255,0.7); font-size: .9rem; margin:.25rem 0 1rem;">
+                        <strong>Recommended</strong> fields are required for access (per the verifier's request).
+                        You may also share additional fields if you want.
+                        <br>
+                        <em>Always included</em> fields are embedded in the credential and cannot be hidden.
+                    </p>
+                    <div id="claims-region" class="disclosure-modal"></div>
+                </div>
+            `;
+
+            // Populate the <select> of matching credentials - FIXED: use state.currentVerification
+            const sel = document.getElementById('credential-select');
+            sel.innerHTML = '';
+            (state.currentVerification.matching_credentials || []).forEach((credential, index) => {
+                let label = `Credential ${index + 1}`;
+                try {
+                    const jwtPart = credential.includes('~') ? credential.split('~')[0] : credential;
+                    const [_, p] = jwtPart.split('.');
+                    const payload = JSON.parse(atob(p.replace(/-/g,'+').replace(/_/g,'/')));
+                    const subj = payload?.vc?.credentialSubject || {};
+                    label = (subj.fullName || subj.name || subj.studentId || label) + (credential.includes('~') ? ' " SD-JWT' : '');
+                } catch {}
+                const opt = document.createElement('option');
+                opt.value = String(index);
+                opt.textContent = label;
+                sel.appendChild(opt);
+            });
+
+            // Renderer for the claims area based on selected cred - FIXED: use state.currentVerification
+            const renderClaimsForSelected = () => {
+                const idx = parseInt(sel.value || '0', 10);
+                const cred = state.currentVerification.matching_credentials[idx];
+
+                // If it's NOT SD-JWT, show a short note 
+                if (!cred || !cred.includes('~')) {
+                    document.getElementById('claims-region').innerHTML = `
+                        <p><i class="fas fa-info-circle"></i> This credential is not SD-JWT. All claims are always included.</p>
+                    `;
+                    return;
+                }
+
+                // SD-JWT: list every disclosure as a checkbox
+                const disclosures = extractDisclosures(cred);
+                if (!disclosures.length) {
+                    document.getElementById('claims-region').innerHTML = `
+                        <p><i class="fas fa-info-circle"></i> No selectively-disclosable claims found in this credential.</p>
+                    `;
+                    return;
+                }
+
+                // Build list with recommended if claim is in PD
+                const rows = disclosures.map(d => {
+                    const isRecommended = REQUIRED_CLAIMS.has(d.claim);
+                    const itemId = `disc-${d.claim}`;
+                    return `
+                        <div class="disclosure-item">
+                            <input type="checkbox" id="${itemId}" value="${d.raw}" ${isRecommended ? 'checked' : ''}>
+                            <label for="${itemId}">
+                                <span class="disclosure-claim">${escapeHtml(d.claim)}</span>
+                                ${isRecommended ? '<span class="credential-badge" style="margin-left:8px;background:#10b981;">recommended</span>' : ''}
+                                <span class="disclosure-value">${escapeHtml(JSON.stringify(d.value))}</span>
+                            </label>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('claims-region').innerHTML = `
+                    <div style="display:flex;gap:.5rem;align-items:center;margin:.25rem 0 .75rem">
+                        <button id="disc-select-all" class="btn btn-secondary"><i class="fas fa-check-square"></i> Select all</button>
+                        <button id="disc-unselect-all" class="btn btn-outline"><i class="fas fa-square"></i> Unselect all</button>
+                        <span style="opacity:.7;font-size:.9rem;margin-left:auto">You can still edit after.</span>
+                    </div>
+                    <div class="disclosure-list" id="claims-checklist">
+                        ${rows}
+                    </div>
+                `;
+
+                const listRoot = document.getElementById('claims-checklist');
+                document.getElementById('disc-select-all').onclick = ()=>{
+                    listRoot.querySelectorAll('input[type="checkbox"]').forEach(cb=> cb.checked = true);
+                };
+                document.getElementById('disc-unselect-all').onclick = ()=>{
+                    listRoot.querySelectorAll('input[type="checkbox"]').forEach(cb=> cb.checked = false);
+                };
+            };
+
+            sel.addEventListener('change', renderClaimsForSelected);
+            renderClaimsForSelected();
+
+            // Show modal
+            elements.verificationModal.classList.add('active');
+        }
+
+        // Close verification modal
+        function closeVerificationModal() {
+            elements.verificationModal.classList.remove('active');
+            state.currentVerification = null;
+        }
+
+        async function handleVerificationSubmit() {
+            // FIXED: use state.currentVerification instead of undefined my previous verificationData //debug
+            let REQUIRED_CLAIMS = new Set(
+                (state.currentVerification.requested_fields || [])
+                .map(f => f && f.name)
+                .filter(Boolean)
+            );
+
+            if (!state.currentVerification) return;
+
+            const credIdx = parseInt(document.getElementById('credential-select').value || '0', 10);
+            const selectedCred = state.currentVerification.matching_credentials[credIdx];
+            const isSd = typeof selectedCred === 'string' && selectedCred.includes('~');
+
+            // Collect which claims were checked (for SD-JWT)
+            let selectedDisclosures = [];
+            let selectedClaimNames = new Set();
+
+            if (isSd) {
+                const list = document.getElementById('claims-checklist') || document.getElementById('claims-region');
+                if (list) {
+                    const inputs = Array.from(list.querySelectorAll('input[type="checkbox"]'));
+                    for (const inp of inputs) {
+                        if (inp.checked) {
+                            selectedDisclosures.push(inp.value);
+                            try {
+                                const [salt, claim, value] = JSON.parse(atob(inp.value.replace(/-/g,'+').replace(/_/g,'/')));
+                                selectedClaimNames.add(claim);
+                            } catch {}
+                        }
+                    }
+                }
+
+                // Enforce: all required must be selected by the user
+                const missingRequired = [...REQUIRED_CLAIMS].filter(c => !selectedClaimNames.has(c));
+                if (missingRequired.length) {
+                    showAlert(
+                        `Please select all required fields: ${missingRequired.join(', ')}`,
+                        'error'
+                    );
+                    return;
+                }
+            }
+
+            try {
+                // For SD-JWT, ALWAYS build a selective presentation from exactly what the user picked.
+                // if required no picked - fail and alert
+                if (isSd) {
+                    const resp = await fetch(`${state.backendUrl}/create-selective-presentation`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.sessionToken}`
+                        },
+                        body: JSON.stringify({
+                            sdJwt: state.credentials[credIdx],
+                            disclosures: selectedDisclosures,
+                            credentialIndex: credIdx
+                        })
+                    });
+                    if (!resp.ok) {
+                        const t = await resp.json().catch(()=>({}));
+                        showAlert(t.error || 'Failed to build selective presentation', 'error');
+                        return;
+                    }
+                    const data = await resp.json();
+                    state.selectivePresentations[credIdx] = data.presentation;
+                }
+
+                // Submit to wallet backend -> verifier
+                const body = {
+                    state: state.currentVerification.state,
+                    credentialIndex: credIdx
+                };
+                if (isSd) body.useSelectivePresentation = true;
+
+                const response = await fetch(`${state.backendUrl}/submit-presentation`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.sessionToken}`
+                    },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.status === 'redirect' && data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                        return;
+                    }
+                    showAlert('Verification submitted successfully', 'success');
+                    closeVerificationModal();
+                } else {
+                    showAlert(data.error || 'Verification failed', 'error');
+                }
+            } catch (e) {
+                console.error(e);
+                showAlert('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Helper functions
+        function base64urlDecodeToUtf8(b64url) {
+            const b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+            const pad = b64.length % 4 === 2 ? '==' : b64.length % 4 === 3 ? '=' : '';
+            const s = atob(b64 + pad);
+            try {
+                return decodeURIComponent(escape(s));
+            } catch {
+                return s;
+            }
+        }
+
+        function extractDisclosures(sdJwt) {
+            if (!sdJwt || !sdJwt.includes('~')) return [];
+            const parts = sdJwt.split('~');
+            const disclosures = parts.slice(1);
+            const out = [];
+            for (const d of disclosures) {
+                try {
+                    const json = base64urlDecodeToUtf8(d);
+                    const [salt, claim, value] = JSON.parse(json);
+                    out.push({ raw: d, claim, value });
+                } catch (e) {
+                    console.error('Disclosure parse error:', e);
+                }
+            }
+            return out;
+        }
+
+        // Show alert message
+        function showAlert(message, type = 'info', isHtml = false) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+
+            if (isHtml) {
+                alert.innerHTML = message;
+            } else {
+                alert.textContent = message;
+            }
+
+            elements.alertContainer.appendChild(alert);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Handle window resize for AR controls
+        window.addEventListener('resize', setArControlsHeight);
+        if ('fonts' in document) document.fonts.ready.then(setArControlsHeight);
+
+    </script>
+</body>
+</html>
