@@ -1,0 +1,15 @@
+# IMMERSE VC Issuer Service
+# Logs are not handled here, they're emitted by the pod, see issuer's deployment or pod level logs.
+apiVersion: v1
+kind: Service
+metadata:
+  name: vc-issuer
+spec:
+  type: NodePort  # Changed to NodePort
+  selector:
+    app: vc-issuer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+      nodePort: 31000  

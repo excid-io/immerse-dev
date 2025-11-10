@@ -1,0 +1,15 @@
+# Key Registry Container Image
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install express
+
+COPY immerse-issuer/key-registry.cjs .
+
+ENV PORT=8080
+
+EXPOSE 8080
+
+CMD ["node", "key-registry.cjs"]

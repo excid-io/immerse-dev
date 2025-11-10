@@ -1,0 +1,21 @@
+# Key Registry Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: key-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: key-registry
+  template:
+    metadata:
+      labels:
+        app: key-registry
+    spec:
+      containers:
+        - name: registry
+          image: key-registry #:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080

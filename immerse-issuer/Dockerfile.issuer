@@ -1,0 +1,29 @@
+# IMMERSE VC Issuer - Container Image
+# Logging: the app writes logs to STDOUT/STDERR via console.log/console.error.
+# - Format: plain text with timing tags like "[timing][issuer][tr_XXX] ..." and other issuer debug lines.
+# - Collection: rely on the container runtime / Kubernetes (kubectl logs, etc).
+#   To get logs from deployment: kubectl logs deploy/vc-issuer or kubectl get pods and then kubectl logs for any pod
+# - Rotation: no in-container log rotation; rotation/retention is handled by the platform.
+# Security/runtime:
+# - Runs as non-root, exposes PORT (default 8000).
+# - Health endpoints: /healthz (liveness) and /readyz (readiness).
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY immerse-issuer/package*.json ./
+RUN npm install
+
+COPY . .
+
+ENV PORT=8000
+# ENV KEY_REGISTRY_URL=http://key-registry:8080
+ENV POD_NAME=default-issuer
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s \
+  CMD wget -qO- http://localhost:8000/healthz || exit 1
+
+CMD ["node", "--experimental-global-webcrypto", "immerse-issuer/immerse-issuer/vc_issuer.mjs"]

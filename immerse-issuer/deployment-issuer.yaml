@@ -1,0 +1,53 @@
+# deployment-issuer.yaml
+# IMMERSE VC Issuer Deployment
+# see logs with kubectl logs deploy/vc-issuer
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vc-issuer
+spec:
+  replicas: 3 # implementation specific. change in file or use scale in k8s
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: vc-issuer
+  template:
+    metadata:
+      labels:
+        app: vc-issuer
+    spec:
+      containers:
+        - name: issuer
+          image: vc-issuer-image #:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KEY_REGISTRY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: issuer-secrets
+                  key: key-registry-url
+            - name: ISSUER_BASE_URL
+              value: "" # We replace this in start.sh 
+            - name: WALLET_FRONTEND_URL
+              value: "" # add the https url
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 30
