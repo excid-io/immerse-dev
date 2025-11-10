@@ -38,7 +38,7 @@ Only if all of these checks succeed does the verifier consider the presentation 
 
 The flow of messages between these components can be represented as follows:
 
-```bash
+```text
 +-------------------+              +------------------+              +------------------+
 |       Wallet      |              |     Verifier     |              |      Issuer      |
 +-------------------+              +------------------+              +------------------+
@@ -125,3 +125,4 @@ The IMMERSE Verifier follows OID4VP to verify VPs containing SD-JWT VCs that pro
 - W3C, **Verifiable Credentials Data Model 2.0**, W3C Recommendation, 2024. [https://www.w3.org/TR/vc-data-model-2.0/](https://www.w3.org/TR/vc-data-model-2.0/)
 - NIST, **FIPS 186-5: Digital Signature Standard (DSS)**, 2023. [https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-5.pdf)
 - NIST, **SP 800-57 Part 1 Rev.5: Recommendation for Key Management - General**, 2020. [https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final](https://csrc.nist.gov/publications/detail/sp/800-57-part-1/rev-5/final)
+
