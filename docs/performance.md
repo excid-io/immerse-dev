@@ -11,7 +11,6 @@ This section includes all timing measurements that capture the end-to-end perfor
 
 Each measurement reflects the Round-Trip Time (RTT) experienced by the wallet during the credential lifecycle, meaning the elapsed time from when the wallet issues a request until the corresponding response is received. In our context, RTT does not only capture the component's internal processing, but also the network latency, Kubernetes routing, and orchestration overhead, making it the most accurate indicator of end-to-end client-perceived delay. Across the experiment we recorded 14 complete runs of the full lifecycle and observed consistent performance across all runs. The table below reports the averages for each phase, as well as the server-side processing times and descriptions:
 
-```text
 | Component                | Metric                          | Value (ms) | Notes                                                        |
 | ------------------------ | ------------------------------- | ----------- | ------------------------------------------------------------|
 | **Wallet**               | `t_attest_res - t_attest_req`   |      **45** | Attestation RTT (wallet -> attester -> wallet)              |
@@ -30,7 +29,6 @@ Each measurement reflects the Round-Trip Time (RTT) experienced by the wallet du
 | **Verifier**             | `vp_verify`                     |       **7** | Verify VP JWT                                               |
 |                          | `revoc_check`                   |     **197** | Status list fetch & check                                   |
 |                          | `verified_out` (total)          |     **514** | Total verifier processing                                   |
-```
 
 The revocation check time of approx. 197ms represents a significant portion of the total verifier processing time. To investigate this further, we conducted additional analysis outside the original 14 measurement runs, by first identifying whether the revocation check was affected by HTTP request overhead:
 
@@ -75,3 +73,4 @@ Total: 0.247290s
 The curl command used specific timing variables to break down the HTTP request lifecycle: %{time_namelookup} measures DNS resolution time (converting hostname to IP), %{time_connect} captures TCP handshake duration, %{time_appconnect} tracks TLS/SSL negotiation time, %{time_starttransfer} shows Time to First Byte (server processing + initial response), and %{time_total} provides the complete request duration. The results reveal a clear performance profile: 69ms for DNS lookup, 37ms for TCP connection establishment (excl. DNS), 48ms for TLS handshake (excluding TCP Connect and DNS), and 93ms for server processing and response transfer, totaling 247ms. This breakdown demonstrates that majority of the time (154ms) is spent purely on connection setup before any application logic begins, while the remaining time represents actual processing and data transfer, confirming that the latency is primarily infrastructure-related rather than application-bound.
 
 Despite both issuer and verifier running in the same development cluster (and node) for convenience in the development and testing phases of the IMMERSE project, we deliberately maintain the external URL configuration for revocation checks to better simulate production environments. In real-world deployments issuers and verifiers typically operate in separate trust domains, thus verifiers must use the issuer's public endpoints for revocation status. The measured 197ms, while higher than ideal, reflects realistic cross-network latency. Production environments with direct cloud-to-cloud connectivity would likely achieve 50-80ms for similar checks. This approach ensures our performance measurements remain relevant for production scenarios, while acknowledging the development environment overhead.
+
