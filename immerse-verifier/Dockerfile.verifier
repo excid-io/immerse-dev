@@ -1,0 +1,19 @@
+# Dockerfile.verifier - Verifier container image
+# Builds a Node.js runtime for the OID4VP IMMERSE verifier.
+# Starts an HTTP server that exposes the verifiers endpoints and /healthz and /readyz for K8s probes
+# Same logging behavior as IMMERSE Issuer.
+# Runs as non-root, exposes PORT (default 5000).
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install express qrcode jose base64url axios cors
+
+COPY immerse-verifier/verifier.mjs .
+
+ENV PORT=5000
+EXPOSE 5000
+
+CMD ["node", "--experimental-global-webcrypto", "verifier.mjs"]

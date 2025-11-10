@@ -1,0 +1,55 @@
+# deployment-verifier.yaml
+# IMMERSE Verifier Deployment
+# see logs with kubectl logs deploy/verfier
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: verifier
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: verifier
+  template:
+    metadata:
+      labels:
+        app: verifier
+    spec:
+      containers:
+        - name: verifier
+          image: verifier-image
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KEY_REGISTRY_URL
+              valueFrom:
+                secretKeyRef:
+                  name: verifier-secrets
+                  key: key-registry-url
+            - name: VERIFIER_BASE_URL
+              value: ""  # Will be updated to Ngrok URL by the script
+            - name: WALLET_FRONTEND_URL
+              value: ""  # Add the https url of your wallet
+          ports:
+            - containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /healthz  # Add health endpoint to verifier
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 5000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            
