@@ -53,10 +53,14 @@ Deep link support ensures that when users receive credential offers or verificat
 Credential display follows a card-based design that presents essential information at a glance while providing detailed views on demand. Each credential card shows the credential type, issuer information, issuance date, and visual indicators for special capabilities, such as selective disclosure. The design uses color coding and icons to help users quickly identify different credential types and their status.
 
 *Credential display:*
+<img width="1750" height="734" alt="credential display" src="https://github.com/user-attachments/assets/5243b9bc-c0f2-4cff-b7cf-36d5ae912794" />
+
 
 In the 3D preview mode, using Three.js, credentials are rendered as floating objects in a spacious virtual environment. Users can orbit around these objects, inspecting them from different angles, with a raycasting system enabling intuitive selection through mouse or touch interactions.
 
 *Credential display in 3D preview mode:*
+<img width="1404" height="889" alt="3d credential display" src="https://github.com/user-attachments/assets/9114d611-99d3-4071-9694-6b8305a43cd4" />
+
 
 *3D scene in the IMMERSE Wallet:*
 
@@ -80,7 +84,6 @@ The AR experience represents the most advanced interface mode, leveraging the We
 
 Voice guidance is implemented through the Web Speech API's `SpeechSynthesisUtterance` interface, which dynamically selects the most appropriate voice available on each browser for consistent narration quality, with a text-to-speech system that provides context-aware instructions. The audio feedback system includes distinctive sound effects for different interactions, creating a multi-sensory experience that helps users understand system state without relying solely on visual cues.
 
-*Welcome to the IMMERSE Wallet: how to interact with the Three.js scene.*
 
 ## Issuer Interface
 
@@ -89,6 +92,9 @@ Through IMMERSE Issuer's interface users can obtain VCs (in the context of the p
 Similarly to the IMMERSE Wallet, the IMMERSE Issuer interface allows students to preview how their credentials will appear across different viewing environments, i.e. modes. The 2D mode offers a familiar and comfortable user experince, while the 3D preview serves as a "simplified" AR experience and the AR mode allows the users to interact with the entity with the proper equipment. The deep link mechanism automatically creates secure, one-time-use URLs that direct students to credential offers within their wallets. These links incorporate appropriate security measures to prevent unauthorized access while maintaining a seamless user experience.
 
 *modes.*
+<img width="1499" height="852" alt="issuer 2d" src="https://github.com/user-attachments/assets/a0f5644b-eefb-44fe-912f-4bc264f90f44" />
+<img width="952" height="716" alt="issuer 3d" src="https://github.com/user-attachments/assets/7656b237-9ffb-445c-bd4b-db1fce78678f" />
+
 
 The responsive design of the IMMERSE Issuer ensures that students can access the Issuer interface effectively across all their devices, from desktop computers to mobile phones and tablets. This flexibility supports various credential issuance scenarios, whether students are accessing the portal from home, campus computer labs, or mobile devices during events.
 
@@ -119,6 +125,9 @@ function showVerificationRequest(verificationData) {
 Successful verification triggers access to the protected resource, in this context the virtual classroom, with a smooth transition. The system includes appropriate error handling for failed verification attempts, with clear explanations that help users understand what went wrong and how to resolve the issue.
 
 *modes.*
+<img width="1462" height="832" alt="verifier 2d" src="https://github.com/user-attachments/assets/a63e0c9b-ce4f-4f0d-a9d4-884486f364d7" />
+<img width="1244" height="878" alt="verifier 3d" src="https://github.com/user-attachments/assets/39b8ab45-4b4d-4435-b375-a626f90ada03" />
+
 
 ## Virtual Classroom
 
@@ -129,6 +138,8 @@ The visual design centers around a spiral visualization. It is rendered using Th
 Accessibility considerations are embedded throughout the virtual classroom design. The color schemes provide sufficient contrast for readability, and the interface supports the three aforementioned to accommodate different user preferences and abilities.
 
 *Virtual Classroom scene.*
+<img width="1268" height="888" alt="Screenshot 2025-11-10 163138" src="https://github.com/user-attachments/assets/829f856f-6fdc-433e-b486-14edc1b6a6c2" />
+
 
 ## Technical Implementation
 
