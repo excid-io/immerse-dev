@@ -53,13 +53,27 @@ Deep link support ensures that when users receive credential offers or verificat
 Credential display follows a card-based design that presents essential information at a glance while providing detailed views on demand. Each credential card shows the credential type, issuer information, issuance date, and visual indicators for special capabilities, such as selective disclosure. The design uses color coding and icons to help users quickly identify different credential types and their status.
 
 *Credential display:*
-<img width="1750" height="734" alt="credential display" src="https://github.com/user-attachments/assets/5243b9bc-c0f2-4cff-b7cf-36d5ae912794" />
 
+<p align="center">
+<img height="300" alt="credential display" src="https://github.com/user-attachments/assets/5243b9bc-c0f2-4cff-b7cf-36d5ae912794" />
+</p>
 
 In the 3D preview mode, using Three.js, credentials are rendered as floating objects in a spacious virtual environment. Users can orbit around these objects, inspecting them from different angles, with a raycasting system enabling intuitive selection through mouse or touch interactions.
 
 *Credential display in 3D preview mode:*
-<img width="1404" height="889" alt="3d credential display" src="https://github.com/user-attachments/assets/9114d611-99d3-4071-9694-6b8305a43cd4" />
+
+<p align="center">
+<img height="300" alt="3d credential display" src="https://github.com/user-attachments/assets/9114d611-99d3-4071-9694-6b8305a43cd4" />
+</p>
+
+*Credential display in AR mode:*
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ea2e2c35-15b2-4f7d-b8f2-1df6f0cf5243" alt="Screenshot 2025-11-10 220311" height="300">
+  <img src="https://github.com/user-attachments/assets/61bd9c6a-44a9-4f8b-9481-13373666cd10" alt="Screenshot 2025-11-10 215935" height="300">
+</p>
+
+
 
 
 *3D scene in the IMMERSE Wallet:*
@@ -92,8 +106,13 @@ Through IMMERSE Issuer's interface users can obtain VCs (in the context of the p
 Similarly to the IMMERSE Wallet, the IMMERSE Issuer interface allows students to preview how their credentials will appear across different viewing environments, i.e. modes. The 2D mode offers a familiar and comfortable user experince, while the 3D preview serves as a "simplified" AR experience and the AR mode allows the users to interact with the entity with the proper equipment. The deep link mechanism automatically creates secure, one-time-use URLs that direct students to credential offers within their wallets. These links incorporate appropriate security measures to prevent unauthorized access while maintaining a seamless user experience.
 
 *modes.*
-<img width="1499" height="852" alt="issuer 2d" src="https://github.com/user-attachments/assets/a0f5644b-eefb-44fe-912f-4bc264f90f44" />
-<img width="952" height="716" alt="issuer 3d" src="https://github.com/user-attachments/assets/7656b237-9ffb-445c-bd4b-db1fce78678f" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a0f5644b-eefb-44fe-912f-4bc264f90f44" alt="issuer 2d" height="300">
+  <img src="https://github.com/user-attachments/assets/7656b237-9ffb-445c-bd4b-db1fce78678f" alt="issuer 3d" height="300">
+  <img src="https://github.com/user-attachments/assets/94af0db6-1254-4c7c-ace4-3689954dcbef" alt="Screenshot 2025-11-10 220228" height="300">
+</p>
+
 
 
 The responsive design of the IMMERSE Issuer ensures that students can access the Issuer interface effectively across all their devices, from desktop computers to mobile phones and tablets. This flexibility supports various credential issuance scenarios, whether students are accessing the portal from home, campus computer labs, or mobile devices during events.
@@ -125,8 +144,12 @@ function showVerificationRequest(verificationData) {
 Successful verification triggers access to the protected resource, in this context the virtual classroom, with a smooth transition. The system includes appropriate error handling for failed verification attempts, with clear explanations that help users understand what went wrong and how to resolve the issue.
 
 *modes.*
-<img width="1462" height="832" alt="verifier 2d" src="https://github.com/user-attachments/assets/a63e0c9b-ce4f-4f0d-a9d4-884486f364d7" />
-<img width="1244" height="878" alt="verifier 3d" src="https://github.com/user-attachments/assets/39b8ab45-4b4d-4435-b375-a626f90ada03" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/a63e0c9b-ce4f-4f0d-a9d4-884486f364d7" alt="verifier 2d" height="300">
+  <img src="https://github.com/user-attachments/assets/39b8ab45-4b4d-4435-b375-a626f90ada03" alt="verifier 3d" height="300">
+  <img src="https://github.com/user-attachments/assets/9617a60b-1528-4be4-a0a2-2e49377ceddc" alt="Screenshot 2025-11-10 220434" height="300">
+</p>
 
 
 ## Virtual Classroom
@@ -240,7 +263,47 @@ Looking toward the future, Apple's announcement of WebXR support for the Vision 
 
 For Android devices without dedicated AR glasses, the system still provides a functional AR experience using the device's screen and sensors. In WebXR-compatible browsers, such as Chrome on ARCore-supported phones, the browser provides camera passthrough and six-degrees-of-freedom (6-DoF) motion tracking (i.e. the AR system tracks both where the user is and which way she's facing, enabling the virtual objects to stay correctly oriented and positioned as she moves around), while the transparent Three.js renderer (`alpha: true`) overlays the virtual scene on top of the live camera feed. While this "magic window" approach doesn't offer the same level of immersion as dedicated AR glasses, it does allow users to position and interact with credential objects in their physical environment. The rendering quality in this mode remains high, though the experience naturally feels more like looking through a portal into an AR world rather than having objects seamlessly integrated into the user's environment. Android testing was primarily conducted on Samsung Galaxy A15, Samsung Galaxy A16, Samsung Galaxy A80, CUBOT X20 Pro, and Xiaomi Redmi 15C, with comparable results observed on Motorola G54, Realme Narzo 60x, and OnePlus Nord CE 3 Lite, all representative of mid-range devices capable of running WebXR through Chrome with consistent frame rates and smooth rendering.
 
-*Android tests.*
+***Android tests.***
+
+*IMMERSE Issuer: 2D, 3D, AR*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/d506d696-0d69-4c7d-99c7-3c80742e962c" alt="ian2d1" width="110">
+  <img src="https://github.com/user-attachments/assets/dea86410-ee0d-43dd-8632-693668840cec" alt="ian2d2" width="110">
+  <img src="https://github.com/user-attachments/assets/1e3493b1-94e5-48ac-9c8d-cacac7ba31cc" alt="ian2d" width="110">
+  <img src="https://github.com/user-attachments/assets/bdcf8d9d-e47d-4bdc-bc2a-dc0340f04ccd" alt="ian2d5" width="110">
+  <img src="https://github.com/user-attachments/assets/836c667a-2102-4068-894b-6fc5d9984cbe" alt="ian2d6" width="110">
+  <img src="https://github.com/user-attachments/assets/4a3e1cd9-13c8-41c5-b7ce-194806fcd8b6" alt="ian3d1" width="110">
+  <img src="https://github.com/user-attachments/assets/45893e2e-fda3-4ca4-b713-eb8714df8782" alt="ian3d2" width="110">
+  <img src="https://github.com/user-attachments/assets/442fd144-5dc5-456d-bd32-e8953cbdb8f8" alt="ianar1" width="110">
+</p>
+
+*IMMERSE Wallet: 2D, 3D, AR*
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/30e56871-e9bb-4341-b008-95d4d55173a2" alt="wlog" width="95">
+  <img src="https://github.com/user-attachments/assets/46ab0731-b573-4d77-b9a3-dd396bd4a0ca" alt="wlog2d" width="95">
+  <img src="https://github.com/user-attachments/assets/e37ff808-84f3-42af-bb36-7e691dbabe14" alt="wlogar" width="95">
+  <img src="https://github.com/user-attachments/assets/18510981-fb07-4671-8fab-264705fb725d" alt="wan2d" width="95">
+  <img src="https://github.com/user-attachments/assets/5a424768-01b5-455f-8571-e6f57dea75e5" alt="wan2d2" width="95">
+  <img src="https://github.com/user-attachments/assets/3b78249f-015a-44bd-a071-6ee32b7641e8" alt="wan2d3" width="95">
+  <img src="https://github.com/user-attachments/assets/e08d2cbe-36aa-46de-aeec-c154bf6d02f5" alt="w3dcred" width="95">
+  <img src="https://github.com/user-attachments/assets/0928c9e1-d323-4152-8aae-8081ef81c64d" alt="wadcred" width="95">
+  <img src="https://github.com/user-attachments/assets/fcba6e9b-19fd-48af-b191-f2ea2f4796ec" alt="warcred" width="95">
+</p>
+
+*IMMERSE Verifier: 2D, 3D, AR*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9911e771-016c-4990-bc01-c02c0a2d00c1" alt="van2d1" width="95">
+  <img src="https://github.com/user-attachments/assets/915e755e-9a65-4977-9575-1a2ddf8e4730" alt="van2d2" width="95">
+  <img src="https://github.com/user-attachments/assets/4fdf91f7-a683-4cee-aa7f-01cc18071ca5" alt="van2d3" width="95">
+  <img src="https://github.com/user-attachments/assets/9b517dc6-1b6b-4dcb-b88c-798745e9c67e" alt="van2d4" width="95">
+  <img src="https://github.com/user-attachments/assets/cd295e33-2190-4121-9257-69f26d70bba2" alt="van2d5" width="95">
+  <img src="https://github.com/user-attachments/assets/c257dd68-6433-47b8-a871-01d1eb618596" alt="van3d1" width="95">
+  <img src="https://github.com/user-attachments/assets/788c11bd-7ee8-49a3-b45b-368e4335a741" alt="van3d2" width="95">
+  <img src="https://github.com/user-attachments/assets/b027e24f-64c9-44ce-8ea7-5d810d485695" alt="vanar" width="95">
+  <img src="https://github.com/user-attachments/assets/d49c5872-5430-4a10-a036-aa26ee65270a" alt="vclassan" width="95">
+</p>
+
 
 Our testing has also included various desktop configurations for the 2D and 3D preview modes, with consistent performance across modern browsers including Chrome, Firefox and Edge. The 3D preview mode works particularly well on desktop systems with dedicated graphics cards, though even integrated graphics solutions provide acceptable performance for the relatively lightweight scenes used in credential visualization.
 
