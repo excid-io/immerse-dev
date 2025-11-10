@@ -195,6 +195,16 @@ Our primary AR testing has been conducted using the Samsung Galaxy S24 FE smartp
 For iOS compatibility testing, we've utilized the iPhone 15 running the latest versions of iOS. As noted in our testing, Chrome on iOS does not support WebXR due to Apple's requirement that all browsers on iOS use the WebKit rendering engine. Since WebKit does not currently implement the WebXR API, this limitation affects all browsers on iOS regardless of their capabilities on other platforms. However, we've successfully launched AR functionality on iOS using Mozilla's WebXR Viewer application, available through the App Store. Interestingly, we observed that the wallet interface functions within the Safari browser, though the consistency of this experience varies (see below). The most reliable AR experience on iOS currently comes through the dedicated WebXR Viewer app rather than through standard mobile browsers. Note that there have been no tests that include the Vision Pro headset.
 
 *iOS tests.*
+*Issuer:*
+![i2d1](https://github.com/user-attachments/assets/1c3da622-65f3-4886-95b1-f593eeff43c8)
+![i2d2](https://github.com/user-attachments/assets/5b26e245-6569-482e-9509-cd249a12bf81)
+![i2d3](https://github.com/user-attachments/assets/5a83df50-9fe9-43a2-8d14-bacf9866559d)
+![i2d4](https://github.com/user-attachments/assets/d7933c43-61bc-4746-afe1-081ee349729c)
+![i3d1](https://github.com/user-attachments/assets/b6b3b1d6-64d4-4359-964b-0eb136382694)
+![i3d2](https://github.com/user-attachments/assets/836d9a3a-35ef-4c7e-be7a-8a95a2742a35)
+![i3d3](https://github.com/user-attachments/assets/ae9efcdd-6628-4389-a71c-e2f5a143557d)
+![iar1](https://github.com/user-attachments/assets/d6f2c323-cabc-43a1-a953-f88813a7cdd8)
+
 
 Looking toward the future, Apple's announcement of WebXR support for the Vision Pro headset suggests that broader WebXR adoption may be coming to Apple's ecosystem. This development could significantly improve AR accessibility for iOS users in the coming years, potentially eliminating the need for dedicated WebXR applications.
 
